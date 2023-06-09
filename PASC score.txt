@@ -1,0 +1,66 @@
+data covmed.pascoutcomes_pacute ;
+set aaa;
+w1_death=1;
+w1_hos=0.25;
+w1_comp=1;
+w1_fatigue=0.215;
+w1_ncd2=0.128;
+
+w1_ihd2=1.009;
+w1_ihd3=1.009;
+w1_ihd4=1.009;
+
+w1_dm2lab=0.114;
+w1_dm=0.114;
+
+w1_aki=0.605;
+w1_pe=0.54;
+w1_pe2=0.54;
+w1_pe3=0.54;
+w1_short=0.138;
+w1_short2=0.138;
+w1_short3=0.138;
+w1_cough=0.138;
+w1_cough2=0.138;
+w1_cough3=0.138;
+w1_cough4=0.138;
+w1_cough5=0.138;
+w1_muscle=0.11;
+w1_liverd=0.039;
+w1_dv=0.54;
+w1_dv2=0.54;
+w1_dysrh=0.124;
+w1_dysrh2=0.124;
+w1_dysrh3=0.124;
+
+w1_dysauto=0.133;
+w1_dysauto2=0.133;
+w1_anemia = 0.410;
+w1_pulmo = 0.138;
+w1_kidney = 0.605;
+w1_hf = 1.009;
+w1_sleepd = 0.215;
+run;  
+
+
+data PASCscore;
+set covmed.pascoutcomes_pacute ;
+
+array pasc_arH {*}  hx_fatigue hx_ncd2  hx_ihd4  hx_kidney  hx_pe hx_pulmo hx_muscle hx_liverd 
+hx_dv hx_dysrh3 hx_dysauto hx_anemia hx_hf hx_sleepaid;  
+array pasc_arO {*} oc_fatigue oc_ncd2  oc_ihd4  oc_kidney 
+                    oc_pe oc_pulmo oc_muscle oc_liverd oc_dv oc_dysrh3 oc_dysauto oc_anemia oc_hf oc_sleepaid;
+
+array w1 {*} w1_fatigue w1_ncd2 w1_ihd4 w1_kidney w1_pe w1_pulmo w1_muscle w1_liverd w1_dv w1_dysrh3 w1_dysauto w1_anemia w1_hf w1_sleepaid
+
+do i=1 to 14;
+if pasc_arH[i]=. and pasc_ar0[i]>t0+30 and pasc_ar[i] <= endoffollow then dpo;
+pasc_ar0[i]=w1[i];
+end;
+else pasc_ar0[i]=0;
+end;
+sum = oc_fatigue+ oc_ncd2 + oc_ihd4 + oc_kidney 
+                  +  oc_pe +oc_pulmo +oc_muscle +oc_liverd +oc_dv+ oc_dysrh3 +oc_dysauto +oc_anemia + oc_hf +oc_sleepaid;
+time =(min(deathdate,endoffollow,t0+180)-t0)/100;
+
+run;
